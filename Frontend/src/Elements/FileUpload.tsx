@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {type DragEvent, useState} from "react";
 import axios from "axios";
 import type {FetchStructure} from "./ExplorerTypes";
 
@@ -18,7 +18,33 @@ export function FileUpload({closePopup, fetchStructure, location}: FileUploadPro
     const [failureNotification, setFailureNotification] = useState("");
     const [failedFiles, setFailedFiles] = useState<UploadFailure[]>([]);
     const [files, setFiles] = useState<File[]>([]);
+    const [isDragging, setIsDragging] = useState(false);
     const [progress, setProgress] = useState(0);
+
+    const updateFiles = (fileList: FileList | null) => {
+        if (!fileList) return;
+        setFiles(Array.from(fileList));
+    };
+
+    const handleDragOver = (event: DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        event.dataTransfer.dropEffect = "copy";
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (event: DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (event: DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsDragging(false);
+        updateFiles(event.dataTransfer.files);
+    };
 
     const handleUpload = () => {
         setProgress(0);
@@ -88,8 +114,16 @@ export function FileUpload({closePopup, fetchStructure, location}: FileUploadPro
                     <h2 className="text-xl font-semibold text-gray-700 mb-4">Upload Files</h2>
 
                     <label
-                        className="block border-2 border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition"
+                        className={`block border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition ${
+                            isDragging
+                                ? "border-blue-500 bg-blue-50"
+                                : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                        }`}
                         htmlFor="fileInput"
+                        onDragEnter={handleDragOver}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
                     >
                         <svg className="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -106,7 +140,7 @@ export function FileUpload({closePopup, fetchStructure, location}: FileUploadPro
                             multiple
                             type="file"
                             required
-                            onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
+                            onChange={(event) => updateFiles(event.target.files)}
                         />
                     </label>
 
