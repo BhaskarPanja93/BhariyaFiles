@@ -6,8 +6,8 @@ export default function Homepage() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const [fileUploadVisible, setFileUploadVisible] = useState(false);
-    const [folderCreateVisible, setFolderCreateVisible] = useState(false);
+    const [, setFileUploadVisible] = useState(false);
+    const [, setFolderCreateVisible] = useState(false);
 
     useEffect(() => {
 

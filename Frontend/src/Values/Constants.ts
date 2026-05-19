@@ -4,7 +4,7 @@ export const BetaWS = false;
 
 export const Domain = "bhariya.ddns.net";
 export const Origin = `https://${Domain}`;
-export const Purpose = "/auth";
+export const Purpose = "/files";
 export const PurposeFull = `${Origin}${Purpose}`;
 
 const FrontendPrefix = "";
